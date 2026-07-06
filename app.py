@@ -1,11 +1,15 @@
-import streamlit as st
 import pickle
+from pathlib import Path
+
 import requests
+import streamlit as st
+
+BASE_DIR = Path(__file__).resolve().parent
 
 st.set_page_config(page_title='Movies Recommender', page_icon=None, layout="centered", initial_sidebar_state="auto", menu_items=None)
 
 def local_css(file_name):
-  with open(file_name) as f:
+  with (BASE_DIR / file_name).open() as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 local_css("style.css")
@@ -27,8 +31,11 @@ def recommend(movie):
     recommended_movies_posters.append(fetch_poster(movie_id))
   return recommended_movies, recommended_movies_posters
 
-movies_list = pickle.load(open('movies.pkl', 'rb'))
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+with (BASE_DIR / 'movies.pkl').open('rb') as movies_file:
+  movies_list = pickle.load(movies_file)
+
+with (BASE_DIR / 'similarity.pkl').open('rb') as similarity_file:
+  similarity = pickle.load(similarity_file)
 
 st.title('Movie Recommender System')
 
